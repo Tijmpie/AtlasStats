@@ -1,7 +1,8 @@
 {
-    "name": "Atlas Statistics | BETA",
+    "name": "AtlasStats",
     "creator": "Timjime",
     "entry": "index.js",
-    "version": 1.0,
+    "version": "0.2.1",
+    "require": "PersistentData",
     "description": "This module allows for a few Quality of life changes and statistics for the new Hypixel Atlas! Note that this is a beta version."
 }
