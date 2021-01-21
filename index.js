@@ -6,7 +6,7 @@ const settings = new SettingsObject("AtlasStats", [{
 		settings:[
             new Setting.Toggle("Enable hud", true),
             new Setting.Toggle("Ban rate", true),
-            new Setting.Slider("Ban rate decimals", 0, 1, 5, 0)
+            new Setting.Slider("Ban rate decimals", 1, 1, 5, 0)
 		],
 	},
 ]).setCommand('ats').setSize(250, 60);
