@@ -33,8 +33,6 @@ var data = new PVObject("AtlasStats", {
 }, ".newdata.json")
 
 
-
-
 // Keybinds
 const TPsus = new KeyBind("Teleport to suspect", Keyboard.KEY_NONE, "AtlasStats")
 
@@ -147,6 +145,22 @@ function clickFunction(mouseX, mouseY, mouseButton, guiName, event) {
 register("command", function(arg) {
     if (arg) {
         switch (arg.toLowerCase()) {
+            case "help":
+                ChatLib.chat("&3&l| ---------------------------------------------");
+                ChatLib.chat("&3&l| /atl help -");
+                ChatLib.chat("&a| Shows this command.");
+                ChatLib.chat("&3&l| /atl settings -");
+                ChatLib.chat("&aOpens the settings menu.");
+                ChatLib.chat("&3&l| /atl verdicts -");
+                ChatLib.chat("&a| Shows the number of verdicts you have.");
+                ChatLib.chat("&3&l| /atl bans -");
+                ChatLib.chat("&a| Shows the number of bans you have.");
+                ChatLib.chat("&3&l| /atl evident -");
+                ChatLib.chat("&a| Shows this number of evident hacking reports you have.");
+                ChatLib.chat("&3&l| /atl insufficient -");
+                ChatLib.chat("&a| Shows the number of insufficient evidence reports.");
+                ChatLib.chat("&3&l| ---------------------------------------------");
+                break;
             case "verdicts":
                 ChatLib.chat("&aYou have " + data.verdict + " verdicts!");
                 break;
@@ -161,4 +175,4 @@ register("command", function(arg) {
                 break;
         }
     }
-}).setTabCompletions(["verdicts","bans","evident","insufficient"]).setName("atl");
+}).setTabCompletions(["help","verdicts","bans","evident","insufficient"]).setName("atl");
