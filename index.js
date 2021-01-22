@@ -9,20 +9,30 @@ const settings = new SettingsObject("AtlasStats", [{
 		settings:[
             new Setting.Toggle("Enable hud", true),
             new Setting.Toggle("Ban rate", true),
-            new Setting.Slider("Ban rate decimals", 1, 1, 5, 0),
+            new Setting.Toggle("Ban accuracy", true),
+            new Setting.Slider("Decimals", 1, 1, 5, 0),
             new Setting.Slider("Text location X", 10, 0, Renderer.screen.getWidth(), 0),
             new Setting.Slider("Text location Y", 10, 0, Renderer.screen.getHeight(), 0)
 		],
 	},
-]).setCommand('ats').setSize(250, 110);
+]).setCommand('ats').setSize(300, 125);
 Setting.register(settings);
 
 
-// Persistant data for statistics
-var data = new PVObject("AtlasStats", {
+// Persistant data for statistics carry-over
+var olddata = new PVObject("AtlasStats", {
     verdict: 0,
     ban: 0
 });
+
+var data = new PVObject("AtlasStats", {
+    verdict: olddata.verdict,
+    ban: olddata.ban,
+    hack: olddata.ban,
+    legit: 0
+}, ".newdata.json")
+
+
 
 
 // Keybinds
@@ -49,14 +59,20 @@ register("chat", function(message, event){
 register("renderOverlay", myRenderOverlay);
 function myRenderOverlay() {
     if (settings.getSetting("Display Settings", "Enable hud")) {
-        var x = Number(settings.getSetting("Display Settings", "Text location X"));
-        var y = Number(settings.getSetting("Display Settings", "Text location Y"));
-        var banRate = ((data.ban / data.verdict) * 100).toFixed(settings.getSetting("Display Settings", "Ban rate decimals"))
 
-        var title = new Text("Statistics for Hypixel Atlas", x, y).setColor(Renderer.GOLD);
-        var verdictRender = new Text("Verdicts: " + data.verdict, x, y + 10);
-        var banRender = new Text("Bans: " + data.ban, x, y + 20);
+        // Variables for location and rates / accuracy
+        let x = Number(settings.getSetting("Display Settings", "Text location X"));
+        let y = Number(settings.getSetting("Display Settings", "Text location Y"));
+        let banRate = ((data.ban / data.verdict) * 100).toFixed(settings.getSetting("Display Settings", "Decimals"));
+        let banAccuracy = ((data.ban / data.hack) * 100).toFixed(settings.getSetting("Display Settings", "Decimals"));
+        var dist;
+        
+        // Use of Text function
+        let title = new Text("Statistics for Hypixel Atlas", x, y).setColor(Renderer.GOLD);
+        let verdictRender = new Text("Verdicts: " + data.verdict, x, y + 10);
+        let banRender = new Text("Bans: " + data.ban, x, y + 20);
 
+        // Drawing the text functions on screen
         title.draw();
         verdictRender.draw();
         banRender.draw();
@@ -64,10 +80,65 @@ function myRenderOverlay() {
 
         // Takes the percentage of bans
         if (settings.getSetting("Display Settings", "Ban rate")) {
-            var banPercent = new Text(
+            let banPercent = new Text(
                 "Ban rate: " + banRate + "%", x, y + 30);
-
+                dist = 40;
             banPercent.draw();
         }
+
+        else {
+            dist = 30;
+        }
+
+
+        // Takes the ban accuracy
+        if (settings.getSetting("Display Settings", "Ban accuracy")) {
+            let banAPercent = new Text(
+                "Ban accuracy: " + banAccuracy + "%", x, y + dist);
+
+                banAPercent.draw();
+        }
     }
+}
+
+
+// Gui check for Positive or negative verdicts
+var guiClickTrigger = register("GuiMouseClick", clickFunction);
+
+function clickFunction(mouseX, mouseY, mouseButton, guiName, event) {
+    try {
+
+        // Gets clicked gui slot
+        var inventory = Player.getOpenedInventory();
+        var inventoryName = inventory.getName();
+
+        var myGui = Client.currentGui.get();
+        var slotHash = myGui.getSlotUnderMouse();
+
+        if (slotHash !== null) {
+            var slotInt = slotHash.field_75222_d;
+            ChatLib.chat(slotInt);
+        }
+
+        // Adds to hack or legit variable if Verdict is made
+        if (inventoryName == "Atlas Verdict - Hacking") {
+            if (slotInt == 32) {
+                setTimeout(function(){
+                    data.hack++;
+                }, 3000);
+            }
+            else if (slotInt == 30) {
+                setTimeout(function(){
+                    data.legit++;
+                }, 3000);
+            }
+            else {
+                return;
+            }
+        }
+    }
+    catch(e) {
+        return;
+    }
+    
 }
