@@ -117,7 +117,6 @@ function clickFunction(mouseX, mouseY, mouseButton, guiName, event) {
 
         if (slotHash !== null) {
             var slotInt = slotHash.field_75222_d;
-            ChatLib.chat(slotInt);
         }
 
         // Adds to hack or legit variable if Verdict is made
@@ -142,3 +141,24 @@ function clickFunction(mouseX, mouseY, mouseButton, guiName, event) {
     }
     
 }
+
+
+// Commands
+register("command", function(arg) {
+    if (arg) {
+        switch (arg.toLowerCase()) {
+            case "verdicts":
+                ChatLib.chat("&aYou have " + data.verdict + " verdicts!");
+                break;
+            case "bans":
+                ChatLib.chat("&aYou have " + data.ban + " bans!");
+                break;
+            case "evident":
+                ChatLib.chat("&aYou have " + data.hack + " evident hacking reports!");
+                break;
+            case "insufficient":
+                ChatLib.chat("&aYou have " + data.legit + " insufficient evidence report!");
+                break;
+        }
+    }
+}).setTabCompletions(["verdicts","bans","evident","insufficient"]).setName("atl");
