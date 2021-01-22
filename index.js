@@ -1,3 +1,11 @@
+/* Important -
+When updating go through the following checklist.
+Test every command and feature.
+Make sure the metadata.json has the correct version number and changes.
+Make sure to delete the settings file, and the two data files.
+And make sure to download the right version, and upload the right version to GitHub.
+*/
+
 // Imports
 import PVObject from "PersistentData";
 import { Setting, SettingsObject } from "SettingsManager/SettingsManager";

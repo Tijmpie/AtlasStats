@@ -2,7 +2,7 @@
     "name": "AtlasStats",
     "creator": "Timjime",
     "entry": "index.js",
-    "version": "3.2.5",
+    "version": "3.2.6",
     "requires": ["SettingsManager", "PersistentData"],
     "helpMessage": "&a&lType /atl help for a list of commands",
     "description": "This module allows for a few Quality of life changes and statistics for the new Hypixel Atlas! Note that this is a beta version."
