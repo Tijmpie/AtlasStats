@@ -10,12 +10,12 @@ const settings = new SettingsObject("AtlasStats", [{
             new Setting.Toggle("Enable hud", true),
             new Setting.Toggle("Ban rate", true),
             new Setting.Toggle("Ban accuracy", true),
-            new Setting.Slider("Decimals", 1, 1, 5, 0),
+            new Setting.Slider("Decimals", 2, 1, 5, 0),
             new Setting.Slider("Text location X", 10, 0, Renderer.screen.getWidth(), 0),
             new Setting.Slider("Text location Y", 10, 0, Renderer.screen.getHeight(), 0)
 		],
 	},
-]).setCommand('ats').setSize(300, 125);
+]).setCommand("ats").setSize(300, 125);
 Setting.register(settings);
 
 
@@ -149,7 +149,7 @@ register("command", function(arg) {
                 ChatLib.chat("&3&l| ---------------------------------------------");
                 ChatLib.chat("&3&l| /atl help -");
                 ChatLib.chat("&a| Shows this command.");
-                ChatLib.chat("&3&l| /atl settings -");
+                ChatLib.chat("&3&l| /ats -");
                 ChatLib.chat("&aOpens the settings menu.");
                 ChatLib.chat("&3&l| /atl verdicts -");
                 ChatLib.chat("&a| Shows the number of verdicts you have.");
@@ -175,4 +175,4 @@ register("command", function(arg) {
                 break;
         }
     }
-}).setTabCompletions(["help","verdicts","bans","evident","insufficient"]).setName("atl");
+}).setTabCompletions(["help","settings","verdicts","bans","evident","insufficient"]).setName("atl");

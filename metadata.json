@@ -4,6 +4,6 @@
     "entry": "index.js",
     "version": "3.2.5",
     "requires": ["SettingsManager", "PersistentData"],
-    "helpMessage": "&a&lType /ats for the settings menu",
+    "helpMessage": "&a&lType /atl help for a list of commands",
     "description": "This module allows for a few Quality of life changes and statistics for the new Hypixel Atlas! Note that this is a beta version."
 }
