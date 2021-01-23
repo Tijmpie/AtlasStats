@@ -37,7 +37,7 @@ var data = new PVObject("AtlasStats", {
     verdict: olddata.verdict,
     ban: olddata.ban,
     hack: olddata.ban,
-    legit: 0
+    legit: olddata.verdict - olddata.ban
 }, ".newdata.json")
 
 
