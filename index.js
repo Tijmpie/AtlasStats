@@ -6,6 +6,7 @@ Make sure to delete the settings file, and the two data files.
 And make sure to download the right version, and upload the right version to GitHub.
 */
 
+
 // Imports
 import PVObject from "PersistentData";
 import { Setting, SettingsObject } from "SettingsManager/SettingsManager";
@@ -18,26 +19,35 @@ const settings = new SettingsObject("AtlasStats", [{
             new Setting.Toggle("Enable hud", true),
             new Setting.Toggle("Ban rate", true),
             new Setting.Toggle("Ban accuracy", true),
+            new Setting.Toggle("Ban streak", true),
             new Setting.Slider("Decimals", 2, 1, 5, 0),
             new Setting.Slider("Text location X", 10, 0, Renderer.screen.getWidth(), 0),
             new Setting.Slider("Text location Y", 10, 0, Renderer.screen.getHeight(), 0)
 		],
 	},
-]).setCommand("ats").setSize(300, 125);
+]).setCommand("ats").setSize(300, 135);
 Setting.register(settings);
 
 
 // Persistant data for statistics carry-over
-var olddata = new PVObject("AtlasStats", {
+var superolddata = new PVObject("AtlasStats", {
     verdict: 0,
     ban: 0
 });
+
+var olddata = new PVObject("AtlasStats", {
+    verdict: superolddata.verdict,
+    ban: superolddata.ban,
+    hack: superolddata.ban,
+    legit: superolddata.verdict - superolddata.ban
+}, ".olddata.json")
 
 var data = new PVObject("AtlasStats", {
     verdict: olddata.verdict,
     ban: olddata.ban,
     hack: olddata.ban,
-    legit: olddata.verdict - olddata.ban
+    legit: olddata.verdict - olddata.ban,
+    streak: 0
 }, ".newdata.json")
 
 
@@ -58,7 +68,7 @@ register("chat", function(message, event){
 
 register("chat", function(message, event){
     data.ban++;
-}).setCriteria("&8+&r&32,000 &r&7Hypixel Experience (Positive Atlas Verdict)&r");
+}).setCriteria("&8+&r&31,500 &r&7Hypixel Experience (Positive Atlas Verdict)&r");
 
 
 // Rendering of the text
@@ -67,16 +77,36 @@ function myRenderOverlay() {
     if (settings.getSetting("Display Settings", "Enable hud")) {
 
         // Variables for location and rates / accuracy
-        let x = Number(settings.getSetting("Display Settings", "Text location X"));
-        let y = Number(settings.getSetting("Display Settings", "Text location Y"));
-        let banRate = ((data.ban / data.verdict) * 100).toFixed(settings.getSetting("Display Settings", "Decimals"));
-        let banAccuracy = ((data.ban / data.hack) * 100).toFixed(settings.getSetting("Display Settings", "Decimals"));
-        var dist;
-        
+        var x = Number(settings.getSetting("Display Settings", "Text location X"));
+        var y = Number(settings.getSetting("Display Settings", "Text location Y"));
+        var banRate = ((data.ban / data.verdict) * 100).toFixed(settings.getSetting("Display Settings", "Decimals"));
+        var banAccuracy = ((data.ban / data.hack) * 100).toFixed(settings.getSetting("Display Settings", "Decimals"));
+        var bRate = settings.getSetting("Display Settings", "Ban rate");
+        var bAccuracy = settings.getSetting("Display Settings", "Ban accuracy");
+        var bStreak = settings.getSetting("Display Settings", "Ban streak");
+        var dAccuracy;
+        var dStreak;
+
+
+        // Distance
+        if (bRate && bAccuracy) {
+            dAccuracy = 40;
+            dStreak = 50;
+        }
+        else if (!bRate && bAccuracy || bRate && !bAccuracy) {
+            dAccuracy = 30;
+            dStreak = 40;
+        }
+        else if (!bRate && !bAccuracy) {
+            dStreak = 30;
+        }
+
+
         // Use of Text function
-        let title = new Text("Statistics for Hypixel Atlas", x, y).setColor(Renderer.GOLD);
-        let verdictRender = new Text("Verdicts: " + data.verdict, x, y + 10);
-        let banRender = new Text("Bans: " + data.ban, x, y + 20);
+        var title = new Text("Statistics for Hypixel Atlas", x, y).setColor(Renderer.GOLD);
+        var verdictRender = new Text("Verdicts: " + data.verdict, x, y + 10);
+        var banRender = new Text("Bans: " + data.ban, x, y + 20);
+
 
         // Drawing the text functions on screen
         title.draw();
@@ -85,24 +115,28 @@ function myRenderOverlay() {
 
 
         // Takes the percentage of bans
-        if (settings.getSetting("Display Settings", "Ban rate")) {
-            let banPercent = new Text(
+        if (bRate) {
+            var banPercent = new Text(
                 "Ban rate: " + banRate + "%", x, y + 30);
-                dist = 40;
             banPercent.draw();
-        }
-
-        else {
-            dist = 30;
         }
 
 
         // Takes the ban accuracy
-        if (settings.getSetting("Display Settings", "Ban accuracy")) {
-            let banAPercent = new Text(
-                "Ban accuracy: " + banAccuracy + "%", x, y + dist);
+        if (bAccuracy) {
+            var banAPercent = new Text(
+                "Ban accuracy: " + banAccuracy + "%", x, y + dAccuracy);
 
                 banAPercent.draw();
+        }
+
+
+        // Takes the ban streak
+        if (bStreak) {
+            var banStreak = new Text(
+                "Hacking streak: " + data.streak, x, y + dStreak);
+
+                banStreak.draw();
         }
     }
 }
@@ -130,12 +164,14 @@ function clickFunction(mouseX, mouseY, mouseButton, guiName, event) {
             if (slotInt == 32) {
                 setTimeout(function(){
                     data.hack++;
-                }, 3000);
+                    data.streak++;
+                }, 1000);
             }
             else if (slotInt == 30) {
                 setTimeout(function(){
                     data.legit++;
-                }, 3000);
+                    data.streak = 0;
+                }, 1000);
             }
             else {
                 return;
